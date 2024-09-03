@@ -58,6 +58,4 @@ async def delete_post(callback: CallbackQuery, state: FSMContext):
         card_number = int(callback.data.split('_')[1])
         await reject_card_number(state, card_number)
 
-    # TODO: добавить подтверждение удаления!
-
     await callback.message.delete()
