@@ -37,15 +37,15 @@ async def get_unread_messages(chat_id: int):
                 dialog,
                 limit=unread_count,
         ):
-            if message.poll:
-                continue
-
-            messages.append(message.id)
-
             await client.send_read_acknowledge(
                 entity=dialog,
                 message=message
             )
+
+            if message.poll:
+                continue
+
+            messages.append(message.id)
 
         if messages:
             total_messages += len(messages)
