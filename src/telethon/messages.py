@@ -12,7 +12,7 @@ def is_private(dialog):
         return True
 
 
-async def get_unread_messages():
+async def get_unread_messages(chat_id: int):
     # now = datetime.now()
     # offset_date = now - timedelta(seconds=hours * 3600)
     dialogs_data = load_dialogs()
@@ -20,7 +20,8 @@ async def get_unread_messages():
 
     dialogs = await client.get_dialogs()
 
-    count = 0
+    sends_count = 0
+    total_messages = 0
 
     for dialog in dialogs:
         if dialog.id not in dialog_ids:
@@ -38,6 +39,7 @@ async def get_unread_messages():
         ):
             if message.poll:
                 continue
+
             messages.append(message.id)
 
             await client.send_read_acknowledge(
@@ -45,19 +47,27 @@ async def get_unread_messages():
                 message=message
             )
 
-        if len(messages) > 0:
-            count += 1
+        if messages:
+            total_messages += len(messages)
 
-        await client.forward_messages(
-            entity=349385497,
-            messages=messages,
-            from_peer=dialog.id,
-        )
+            sends_count += 1
 
-        if count > 18:
-            yield 'Сплю 30 секунд...'
-            time.sleep(30)
-            yield 'Продолжим!'
-            count = 0
+            await client.forward_messages(
+                entity=chat_id,
+                messages=messages,
+                from_peer=dialog.id,
+            )
 
-        yield f'Из {dialog.title} переслано {unread_count} сообщений'
+            if sends_count > 18:
+                yield 'Сплю 30 секунд...'
+                time.sleep(30)
+                yield 'Продолжим!'
+                sends_count = 0
+
+            yield f'Из {dialog.title} переслано {unread_count} сообщений'
+
+    if total_messages:
+        yield f'Чатов: {len(dialog_ids)}\nСобрано {total_messages} новых постов'
+    else:
+        yield f'Чатов: {len(dialog_ids)}\nНовых посто не обнаружено!'
+

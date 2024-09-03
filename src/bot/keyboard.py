@@ -1,14 +1,9 @@
 from aiogram.types import (
-    InlineKeyboardMarkup,
-    InlineKeyboardButton,
     ReplyKeyboardMarkup,
     KeyboardButton,
 )
 
-from src.bot.btn_names import (
-    START_GRABBING,
-    CANCEL_BTN_NAME,
-)
+from src.bot.btn_names import START_GRABBING
 
 
 main_kb = ReplyKeyboardMarkup(keyboard=[

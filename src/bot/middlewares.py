@@ -8,7 +8,7 @@ from aiogram.types import (
 )
 from typing import Callable, Dict, Any, Awaitable
 
-from src.settings import OWNER_ID
+from src.settings import OWNER_ID, GROUP_CHAT_ID
 
 
 class AuthMiddleware(BaseMiddleware):
@@ -19,7 +19,7 @@ class AuthMiddleware(BaseMiddleware):
             data: Dict[str, Any]
     ) -> Any:
         chat_id = event.chat.id
-        if chat_id != OWNER_ID:
+        if chat_id not in (OWNER_ID, GROUP_CHAT_ID):
             return
 
         try:
