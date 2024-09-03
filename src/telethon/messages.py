@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from telethon.errors import MessageIdInvalidError
+from telethon.errors import MessageIdInvalidError, ChatForwardsRestrictedError
 
 from src.telethon.start import client
 from src.telethon.dialogs import load_dialogs
@@ -61,7 +61,7 @@ async def get_unread_messages(chat_id: int):
                     messages=messages,
                     from_peer=dialog.id,
                 )
-            except MessageIdInvalidError as err:
+            except (MessageIdInvalidError, ChatForwardsRestrictedError) as err:
                 text = (f'Проблема с пересылкой поста!\n'
                         f'Чат - {dialog.title}\n\n'
                         f'Ошибка: {err}')
