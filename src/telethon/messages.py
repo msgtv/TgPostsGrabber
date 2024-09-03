@@ -1,4 +1,7 @@
 from datetime import datetime, timedelta
+
+from telethon.errors import MessageIdInvalidError
+
 from src.telethon.start import client
 from src.telethon.dialogs import load_dialogs
 
@@ -52,11 +55,17 @@ async def get_unread_messages(chat_id: int):
 
             sends_count += 1
 
-            await client.forward_messages(
-                entity=chat_id,
-                messages=messages,
-                from_peer=dialog.id,
-            )
+            try:
+                await client.forward_messages(
+                    entity=chat_id,
+                    messages=messages,
+                    from_peer=dialog.id,
+                )
+            except MessageIdInvalidError as err:
+                text = (f'Проблема с пересылкой поста!\n'
+                        f'Чат - {dialog.title}\n\n'
+                        f'Ошибка: {err}')
+                yield text
 
             if sends_count > 18:
                 yield 'Сплю 30 секунд...'
