@@ -5,12 +5,13 @@ from aiogram.types import (
     InlineKeyboardButton,
 )
 
-from src.bot.btn_names import START_GRABBING, DELETE_POST, CARD_NUMBERS, STATISTICS
+from src.bot.btn_names import START_GRABBING, DELETE_POST, CARD_NUMBERS, STATISTICS, RESET_STATS
 
 
 main_kb = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text=START_GRABBING)],
-    [KeyboardButton(text=STATISTICS)]
+    [KeyboardButton(text=STATISTICS)],
+    [KeyboardButton(text=RESET_STATS)],
 ], resize_keyboard=True)
 
 
