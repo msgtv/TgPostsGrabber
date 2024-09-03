@@ -1,0 +1,15 @@
+[Unit]
+Description=Граббер постов в телеграмм
+After=syslog.target
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/tgbots/TgPostsGrabber/
+ExecStart=/tgbots/TgPostsGrabber/.venv/bin/python3 main.py
+RestartSec=10
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
