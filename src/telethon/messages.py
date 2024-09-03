@@ -1,9 +1,13 @@
+import os
 from datetime import datetime, timedelta
 
+from telethon.types import Message, MessageMediaPhoto
 from telethon.errors import MessageIdInvalidError, ChatForwardsRestrictedError
 
 from src.telethon.start import client
 from src.telethon.dialogs import load_dialogs
+from src.utils import get_dialog_username, escape_markdown
+from src.settings import PHOTOS_DIR
 
 import time
 
@@ -15,16 +19,19 @@ def is_private(dialog):
         return True
 
 
-async def get_unread_messages(chat_id: int):
-    # now = datetime.now()
-    # offset_date = now - timedelta(seconds=hours * 3600)
+def is_have_photo(message: Message):
+    return message.media and isinstance(message.media, MessageMediaPhoto)
+
+
+async def get_unread_messages():
     dialogs_data = load_dialogs()
     dialog_ids = [d[0] for d in dialogs_data]
 
     dialogs = await client.get_dialogs()
 
-    sends_count = 0
     total_messages = 0
+
+    state = 'process'
 
     for dialog in dialogs:
         if dialog.id not in dialog_ids:
@@ -33,8 +40,6 @@ async def get_unread_messages(chat_id: int):
         unread_count = dialog.unread_count
         if unread_count == 0:
             continue
-
-        messages = []
 
         async for message in client.iter_messages(
                 dialog,
@@ -48,35 +53,37 @@ async def get_unread_messages(chat_id: int):
             if message.poll:
                 continue
 
-            messages.append(message.id)
+            username = get_dialog_username(dialog)
 
-        if messages:
-            total_messages += len(messages)
+            if username:
+                post_url = f'https://t.me/{username}/{message.id}'
+                username = f'@{username}'
+            else:
+                post_url = f'https://t.me/c/{dialog.entity.id}/{message.id}'
 
-            sends_count += 1
+            message_text = f'<a href="{post_url}">{dialog.title}</a>\n'
+            # message_text += f'{username}\n\n' or ''
 
-            try:
-                await client.forward_messages(
-                    entity=chat_id,
-                    messages=messages,
-                    from_peer=dialog.id,
-                )
-            except (MessageIdInvalidError, ChatForwardsRestrictedError) as err:
-                text = (f'Проблема с пересылкой поста!\n'
-                        f'Чат - {dialog.title}\n\n'
-                        f'Ошибка: {err}')
-                yield text
+            is_photos = is_have_photo(message)
 
-            if sends_count > 18:
-                yield 'Сплю 30 секунд...'
-                time.sleep(30)
-                yield 'Продолжим!'
-                sends_count = 0
+            if not is_photos:
+                message_text += f'{message.raw_text}'
 
-            # yield f'Из {dialog.title} переслано {unread_count} сообщений'
+            yield {
+                'state': state,
+                'text': message_text,
+                'is_photos': is_photos,
+            }
 
+            total_messages += 1
+
+    state = 'end'
     if total_messages:
-        yield f'Чатов: {len(dialog_ids)}\nСобрано {total_messages} новых постов'
+        message_text = f'Чатов: {len(dialog_ids)}\nСобрано {total_messages} новых постов'
     else:
-        yield f'Чатов: {len(dialog_ids)}\nНовых посто не обнаружено!'
+        message_text = f'Чатов: {len(dialog_ids)}\nНовых постов не обнаружено!'
 
+    yield {
+        'state': state,
+        'text': message_text
+    }

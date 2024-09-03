@@ -1,6 +1,7 @@
 import os
 import dotenv
 from pathlib import Path
+from src.utils import create_dir_if_not_exists
 
 
 MODE = 'ENV'
@@ -21,6 +22,7 @@ else:
 dotenv.load_dotenv(ENV_FILE)
 
 DIALOGS_FILENAME = os.path.join(DATA_DIR, 'dialogs')
+PHOTOS_DIR = os.path.join(DATA_DIR, 'photos')
 
 # aiogram
 API_TOKEN = os.getenv('API_TOKEN')
@@ -34,3 +36,10 @@ OWNER_ID = int(os.getenv('OWNER_CHAT_ID'))
 
 # group
 GROUP_CHAT_ID = int(os.getenv('GROUP_CHAT_ID'))
+
+# Создать папки, если не существуют
+for d in (
+        DATA_DIR,
+        PHOTOS_DIR,
+):
+    create_dir_if_not_exists(d)
