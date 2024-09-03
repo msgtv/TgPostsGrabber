@@ -1,0 +1,4 @@
+telethon==1.36
+aiogram==3.12
+python_dotenv==1.0.1
+more_itertools==10.4.0
