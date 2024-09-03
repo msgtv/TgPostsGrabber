@@ -64,7 +64,7 @@ async def get_unread_messages(chat_id: int):
                 yield 'Продолжим!'
                 sends_count = 0
 
-            yield f'Из {dialog.title} переслано {unread_count} сообщений'
+            # yield f'Из {dialog.title} переслано {unread_count} сообщений'
 
     if total_messages:
         yield f'Чатов: {len(dialog_ids)}\nСобрано {total_messages} новых постов'
