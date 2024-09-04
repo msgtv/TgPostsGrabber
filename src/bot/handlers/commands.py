@@ -27,10 +27,11 @@ async def cmd_start(message: Message):
     await delete_message_by_timer(message)
 
     kb = main_kb
-    await message.answer(
+    new_msg = await message.answer(
         'Salam popolam!',
         reply_markup=kb
     )
+    await delete_message_by_timer(new_msg)
 
 
 @router.message(Command('grab'))
