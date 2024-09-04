@@ -35,7 +35,7 @@ async def get_statistics(message: Message, state: FSMContext):
 
     new_msg = await message.answer(text=text)
 
-    await delete_message_by_timer(message, seconds=20)
+    await delete_message_by_timer(new_msg, seconds=20)
 
 
 @router.message(F.text == RESET_STATS)
