@@ -1,13 +1,19 @@
+import asyncio
+
 from aiogram.types import Message
 
 from src.bot.keyboard import get_post_manage_kb
+from src.utils import delete_message_by_timer
 
 
 async def process_message_data(data_unit: dict[str, str], message: Message):
     if data_unit['state'] == 'end':
-        await message.answer(
+        msg = await message.answer(
             text=data_unit['text']
         )
+
+        await delete_message_by_timer(msg)
+
     elif data_unit['state'] == 'process':
         text = data_unit['text']
         is_have_photo = data_unit['is_photos']

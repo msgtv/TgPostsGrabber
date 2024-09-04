@@ -6,7 +6,7 @@ from telethon.errors import MessageIdInvalidError, ChatForwardsRestrictedError
 
 from src.telethon.start import client
 from src.telethon.dialogs import load_dialogs
-from src.utils import get_dialog_username, escape_markdown
+from src.utils import get_dialog_username, delete_message_by_timer
 from src.settings import PHOTOS_DIR
 
 import time

@@ -17,13 +17,14 @@ from src.bot.keyboard import (
 from src.bot.handlers.messages import start_grabbing
 from src.bot.handlers.process import process_message_data
 from src.telethon.messages import get_message_data_by_link
+from src.utils import delete_message_by_timer
 
 router = Router()
 
 
 @router.message(CommandStart())
 async def cmd_start(message: Message):
-    await message.delete()
+    await delete_message_by_timer(message)
 
     kb = main_kb
     await message.answer(
@@ -39,7 +40,7 @@ async def cmd_grab(message: Message):
 
 @router.message(Command('getpost'))
 async def cmd_get_post(message: Message, command: CommandObject):
-    await message.delete()
+    await delete_message_by_timer(message)
 
     command_args = re.split(r'\s+', command.args)
 

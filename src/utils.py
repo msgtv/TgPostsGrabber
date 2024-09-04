@@ -1,3 +1,4 @@
+import asyncio
 import os
 import re
 
@@ -20,3 +21,11 @@ def escape_markdown(text):
 def create_dir_if_not_exists(path):
     if not os.path.isdir(path):
         os.makedirs(path)
+
+
+async def delete_message_by_timer(msg, seconds: int = 5):
+    try:
+        await asyncio.sleep(seconds)
+        await msg.delete()
+    except:
+        pass
