@@ -14,8 +14,7 @@ router = Router()
 
 @router.message(F.text == START_GRABBING)
 async def start_grabbing(message: Message):
-
-    chat_id = message.chat.id
+    await message.delete()
 
     async for data_unit in get_unread_messages():
         if data_unit['state'] == 'end':
@@ -42,6 +41,8 @@ async def start_grabbing(message: Message):
 
 @router.message(F.text == STATISTICS)
 async def get_statistics(message: Message, state: FSMContext):
+    await message.delete()
+
     data = await state.get_data()
 
     scores = data.get('scores', {1: 0, 2: 0, 3: 0})

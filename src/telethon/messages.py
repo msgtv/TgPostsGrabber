@@ -50,7 +50,7 @@ async def get_unread_messages():
                 message=message
             )
 
-            if message.poll:
+            if message.poll or not message.raw_text:
                 continue
 
             username = get_dialog_username(dialog)
@@ -64,15 +64,15 @@ async def get_unread_messages():
             message_text = f'<a href="{post_url}">{dialog.title}</a>\n'
             # message_text += f'{username}\n\n' or ''
 
-            is_photos = is_have_photo(message)
+            is_media = bool(message.media)
 
-            if not is_photos:
+            if not all((is_media, username)):
                 message_text += f'{message.raw_text}'
 
             yield {
                 'state': state,
                 'text': message_text,
-                'is_photos': is_photos,
+                'is_photos': is_media,
             }
 
             total_messages += 1
