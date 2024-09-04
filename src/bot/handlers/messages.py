@@ -33,7 +33,9 @@ async def get_statistics(message: Message, state: FSMContext):
     for k, v in scores.items():
         text += f'Карта №{k} - {v}\n'
 
-    await message.answer(text=text)
+    new_msg = await message.answer(text=text)
+
+    await delete_message_by_timer(message, seconds=20)
 
 
 @router.message(F.text == RESET_STATS)
