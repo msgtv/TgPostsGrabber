@@ -92,7 +92,6 @@ async def get_unread_messages():
         async for message in client.iter_messages(
                 dialog,
                 limit=unread_count,
-                reverse=True,
         ):
             await client.send_read_acknowledge(
                 entity=dialog,
