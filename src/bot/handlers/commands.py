@@ -39,6 +39,8 @@ async def cmd_grab(message: Message):
 
 @router.message(Command('getpost'))
 async def cmd_get_post(message: Message, command: CommandObject):
+    await message.delete()
+
     command_args = re.split(r'\s+', command.args)
 
     if not command_args:
