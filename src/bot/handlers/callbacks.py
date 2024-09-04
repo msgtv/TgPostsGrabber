@@ -47,7 +47,10 @@ async def reject_card_number(state: FSMContext, card_number: int):
     if scores is None:
         scores = {1: 0, 2: 0, 3: 0}
     else:
-        scores[card_number] -= 1
+        card_scores = scores[card_number]
+        if card_scores > 0:
+            card_scores = card_scores - 1
+            scores[card_number] = card_scores
 
     await state.update_data(scores=scores)
 
