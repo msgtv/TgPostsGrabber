@@ -1,7 +1,7 @@
 import os
 from datetime import datetime, timedelta
 
-from telethon.types import Message, MessageMediaPhoto
+from telethon.types import Message, MessageMediaPhoto, MessageMediaPoll
 from telethon.errors import MessageIdInvalidError, ChatForwardsRestrictedError
 
 from src.telethon.start import client
@@ -10,6 +10,7 @@ from src.utils import get_dialog_username, escape_markdown
 from src.settings import PHOTOS_DIR
 
 import time
+import re
 
 
 def is_private(dialog):
@@ -19,8 +20,55 @@ def is_private(dialog):
         return True
 
 
-def is_have_photo(message: Message):
-    return message.media and isinstance(message.media, MessageMediaPhoto)
+def get_message_data(dialog, message):
+    if all((not message.raw_text, not message.media or isinstance(message.media, MessageMediaPoll))):
+        return {
+            'state': 'end',
+            'text': 'Пост является опросом или не имеет сообщений',
+            'is_photos': False,
+        }
+
+    username = get_dialog_username(dialog)
+
+    if username:
+        post_url = f'https://t.me/{username}/{message.id}'
+        # username = f'@{username}'
+    else:
+        post_url = f'https://t.me/c/{dialog.id}/{message.id}'
+
+    message_text = f'<a href="{post_url}"><b>{dialog.title}</b></a>\n'
+    # message_text += f'{username}\n\n' or ''
+
+    is_media = bool(message.media)
+
+    if not all((is_media, username)):
+        message_text += f'{message.raw_text}'
+
+    return {
+        'state': 'process',
+        'text': message_text,
+        'is_photos': is_media,
+    }
+
+
+async def get_message_data_by_link(link):
+    pat = r'https://t\.me/(c/)?(.*)/(\d+)'
+    match = re.match(pat, link)
+
+    _, username_or_id, message_id = match.groups()
+
+    try:
+        dialog = await client.get_entity(username_or_id)
+        message = await client.get_messages(dialog, ids=int(message_id))
+
+        data = get_message_data(dialog, message)
+
+        return data
+    except Exception as e:
+        return {
+            'state': 'end',
+            'text': f'Ошибка!\n\n<b>{e.__class__.__name__}</b>\n{e}'
+        }
 
 
 async def get_unread_messages():
@@ -50,30 +98,11 @@ async def get_unread_messages():
                 message=message
             )
 
-            if message.poll or not message.raw_text:
+            message_data = get_message_data(dialog.entity, message)
+            if message_data is None:
                 continue
 
-            username = get_dialog_username(dialog)
-
-            if username:
-                post_url = f'https://t.me/{username}/{message.id}'
-                username = f'@{username}'
-            else:
-                post_url = f'https://t.me/c/{dialog.entity.id}/{message.id}'
-
-            message_text = f'<a href="{post_url}">{dialog.title}</a>\n'
-            # message_text += f'{username}\n\n' or ''
-
-            is_media = bool(message.media)
-
-            if not all((is_media, username)):
-                message_text += f'{message.raw_text}'
-
-            yield {
-                'state': state,
-                'text': message_text,
-                'is_photos': is_media,
-            }
+            yield message_data
 
             total_messages += 1
 

@@ -4,7 +4,7 @@ from aiogram.types import (
     Message,
 )
 
-from src.bot.keyboard import get_post_manage_kb
+from src.bot.handlers.process import process_message_data
 from src.bot.btn_names import START_GRABBING, STATISTICS, RESET_STATS
 
 from src.telethon.messages import get_unread_messages
@@ -17,26 +17,7 @@ async def start_grabbing(message: Message):
     await message.delete()
 
     async for data_unit in get_unread_messages():
-        if data_unit['state'] == 'end':
-            await message.answer(
-                text=data_unit['text']
-            )
-        elif data_unit['state'] == 'process':
-            text = data_unit['text']
-            is_have_photo = data_unit['is_photos']
-
-            kb = await get_post_manage_kb()
-
-            await message.answer(
-                text=text,
-                reply_markup=kb,
-                disable_web_page_preview=not is_have_photo,
-                disable_notification=True,
-            )
-        else:
-            await message.answer(
-                text=f'Неизвестное состояние: {data_unit['text']}'
-            )
+        await process_message_data(data_unit, message)
 
 
 @router.message(F.text == STATISTICS)

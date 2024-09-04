@@ -3,8 +3,7 @@ import re
 
 
 def get_dialog_username(dialog):
-    entity = dialog.entity
-    return entity.usernames and entity.usernames[0].username or entity.username
+    return dialog.usernames and dialog.usernames[0].username or dialog.username
 
 
 # def escape_markdown(text: str) -> str:
