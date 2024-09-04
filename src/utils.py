@@ -24,8 +24,11 @@ def create_dir_if_not_exists(path):
 
 
 async def delete_message_by_timer(msg, seconds: int = 5):
-    try:
-        await asyncio.sleep(seconds)
-        await msg.delete()
-    except:
-        pass
+    async def delete_message(msg, seconds):
+        try:
+            await asyncio.sleep(seconds)
+            await msg.delete()
+        except:
+            pass
+
+    asyncio.create_task(delete_message(msg, seconds))

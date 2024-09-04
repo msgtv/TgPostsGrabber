@@ -41,3 +41,4 @@ async def reset_statistics(message: Message, state: FSMContext):
     await state.clear()
 
     await message.answer('Статистика успешно сброшена!')
+    await delete_message_by_timer(message)
