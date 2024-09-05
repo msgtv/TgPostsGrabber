@@ -1,3 +1,4 @@
+import asyncio
 import os
 from datetime import datetime, timedelta
 
@@ -79,8 +80,6 @@ async def get_unread_messages():
 
     total_messages = 0
 
-    state = 'process'
-
     for dialog in dialogs:
         if dialog.id not in dialog_ids:
             continue
@@ -92,7 +91,6 @@ async def get_unread_messages():
         async for message in client.iter_messages(
                 dialog,
                 limit=unread_count,
-                reverse=True,
         ):
             await client.send_read_acknowledge(
                 entity=dialog,
