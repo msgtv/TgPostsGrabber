@@ -65,15 +65,14 @@ async def cmd_get_post(message: Message, command: CommandObject):
 async def cmd_add_channel(message: Message, command: CommandObject):
     await delete_message_by_timer(message)
 
-    usernames = re.split(r'\s+', command.args)
-
-    if not usernames:
+    if not command.args:
         await message.answer(
             text='Не обнаружены username или id канала\n'
                  'Пример команды: /addchannel <username/id>'
         )
     else:
-        async for text in add_channel_to_analyze(usernames):
+        usernames = re.split(r'\s+', command.args)
+        async for text in add_channel_to_analyze(*usernames):
             new_msg = await message.answer(text)
             await delete_message_by_timer(new_msg)
 
@@ -82,14 +81,14 @@ async def cmd_add_channel(message: Message, command: CommandObject):
 async def cmd_add_channel(message: Message, command: CommandObject):
     await delete_message_by_timer(message)
 
-    usernames = re.split(r'\s+', command.args)
-
-    if not usernames:
+    if not command.args:
         await message.answer(
             text='Не обнаружены username или id канала\n'
                  'Пример команды: /addchannel <username/id>'
         )
     else:
-        async for text in reject_channel_from_analyze(usernames):
+        usernames = re.split(r'\s+', command.args)
+
+        async for text in reject_channel_from_analyze(*usernames):
             new_msg = await message.answer(text)
             await delete_message_by_timer(new_msg)
