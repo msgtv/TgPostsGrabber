@@ -1,7 +1,3 @@
-import asyncio
-import os
-from datetime import datetime, timedelta
-
 from telethon.types import Message, MessageMediaPhoto, MessageMediaPoll
 from telethon.errors import MessageIdInvalidError, ChatForwardsRestrictedError
 
@@ -52,11 +48,17 @@ def get_message_data(dialog, message):
     }
 
 
-async def get_message_data_by_link(link):
+def get_username_msg_id_by_link(link):
     pat = r'https://t\.me/(c/)?(.*)/(\d+)'
     match = re.match(pat, link)
 
     _, username_or_id, message_id = match.groups()
+
+    return username_or_id, message_id
+
+
+async def get_message_data_by_link(link):
+    username_or_id, message_id = get_username_msg_id_by_link(link)
 
     try:
         dialog = await client.get_entity(username_or_id)
