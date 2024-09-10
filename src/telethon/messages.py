@@ -75,7 +75,7 @@ async def get_message_data_by_link(link):
 
 
 async def get_unread_messages():
-    dialogs_data = load_dialogs()
+    dialogs_data = await load_dialogs()
     dialog_ids = [d[0] for d in dialogs_data]
 
     dialogs = await client.get_dialogs()
