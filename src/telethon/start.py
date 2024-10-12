@@ -5,7 +5,12 @@ from src.settings import (
     API_ID,
 )
 
-client = TelegramClient('parsing_lost_dogs', API_ID, API_HASH)
+client = TelegramClient(
+    'parsing_lost_dogs',
+    API_ID,
+    API_HASH,
+    system_version='4.16.30-vxCUSTOM'
+)
 
 
 async def start_client():
