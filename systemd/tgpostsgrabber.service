@@ -7,7 +7,7 @@ After=network.target
 Type=simple
 User=root
 WorkingDirectory=/tgbots/TgPostsGrabber/
-ExecStart=/tgbots/TgPostsGrabber/.venv/bin/python3 main.py
+ExecStart=/tgbots/TgPostsGrabber/venv/bin/python3 main.py
 RestartSec=10
 Restart=always
 
