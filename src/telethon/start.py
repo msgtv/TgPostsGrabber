@@ -9,7 +9,7 @@ client = TelegramClient(
     'parsing_lost_dogs',
     API_ID,
     API_HASH,
-    system_version='4.16.30-vxCUSTOM'
+    system_version='4.16.30-vxCUSTOM_asd'
 )
 
 
